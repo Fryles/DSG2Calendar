@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+kronos = {
+	'user': 'DKS1234567',
+	'password' : 'IMakeMinimumWage'
+}
