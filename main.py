@@ -14,7 +14,7 @@ import config as cfg
 import Service as srv
 username = cfg.kronos['user']
 password = cfg.kronos['password']
-#days out to check schedule, keep this as a const for now..
+#days out to check schedule, keep this as 14 for now
 days_out = 14
 
 chrome_options = webdriver.ChromeOptions()
@@ -27,7 +27,7 @@ chrome_driver = os.path.dirname(os.path.realpath(__file__))+'\\Drivers\\winchrom
 
 
 def get_dates():
-	url = 'https://workforcemobile.dcsg.com/wfc/logon'
+	url = cfg.user['url']
 	driver.get(url)
 	driver.find_element_by_id('username').send_keys(username)
 	driver.find_element_by_id('passInput').send_keys(password)
@@ -50,38 +50,59 @@ def get_dates():
 			t = t.split('-')
 			d = driver.find_element_by_xpath('//*[@id="column-Date-Row-'+str(i)+'"]/div').text.split(' ')[1]
 			times[d] = t
-	print(times)
 	return times
 
 def add_to_cal(dates):
 	service = srv.getService()
 	now = datetime.now()
-	for date, time in dates.items():
+	events_result = service.events().list(calendarId='primary', q = 'Work', timeMin=datetime.utcnow().isoformat() + 'Z', maxResults = days_out, singleEvents=True, orderBy='startTime').execute()
+	events = events_result.get('items', [])
+	
+	for event in events:#remove events if they have been deleted/changed
+		evdate = event['start'].get('dateTime')[::-1].split('-',1)[1][::-1]
+		evdate = datetime.strptime(evdate, '%Y-%m-%dT%H:%M:%S')	
+		for date, time in dates.items():
+			date = datetime.strptime(date, '%m/%d')
+			time = datetime.strptime(time[0], '%I:%M%p')
+			if evdate.strftime('%m/%d') == date.strftime('%m/%d') and evdate.strftime('%I:%M%p') == time.strftime('%I:%M%p'):
+				break
+		else:
+			to_be_del = event.get('id')
+			service.events().delete(calendarId='primary', eventId=to_be_del).execute()
+				
+
+	for date, time in dates.items():#add work events
 		st = datetime.strptime(time[0], '%I:%M%p')
 		et = datetime.strptime(time[1], '%I:%M%p')
 		sh,sm = st.hour, st.minute
 		eh,em = et.hour, et.minute
 		m,d = [int(z) for z in date.split('/')]
-		start = datetime(now.year, m, d, sh, sm, 0, 0).isoformat()
-		end = datetime(now.year, m, d, eh, em, 0, 0).isoformat()
-		event = {
-			'summary': 'Work',
-			'location': '231 W Esplanade Dr, Oxnard, CA 93036',
-			'description': 'Building bikes...',
+		start = datetime(now.year, m, d, sh, sm, 0, 0)
+		end = datetime(now.year, m, d, eh, em, 0, 0)
+		to_add = {
+			'summary': cfg.user['work_title'],
+			'location': cfg.user['work_address'],
+			'description': cfg.user['work_description'],
 			'start': {
-				'dateTime': start,
-				'timeZone': 'America/Chicago',#this is so hacky but its fine for now
+				'dateTime': start.isoformat(),
+				'timeZone': cfg.user['timezone'],
 			},
 			'end': {
-				'dateTime': end,
-				'timeZone': 'America/Chicago',#this is so hacky but its fine for now
+				'dateTime': end.isoformat(),
+				'timeZone': cfg.user['timezone'],
 			}
 		}
-		event = service.events().insert(calendarId='primary', body=event).execute()
+		for event in events:#make sure event isnt already created
+			evdate = event['start'].get('dateTime')[::-1].split('-',1)[1][::-1]
+			evdate = datetime.strptime(evdate, '%Y-%m-%dT%H:%M:%S')
+			if evdate.strftime('%m-%d-%H') == start.strftime('%m-%d-%H'):
+				break
+		else:
+			service.events().insert(calendarId='primary', body=to_add).execute()
 
 
 if __name__ == "__main__":
 	driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
 	dates = get_dates()
 	add_to_cal(dates)
-	#driver.close()
+	driver.close()

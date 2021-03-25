@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
 kronos = {
-	'user': 'DKS1234567',
+	'user': 'XYZ1234567',
 	'password' : 'IMakeMinimumWage'
+}
+user = {
+	'url' : 'https://workforcemobile.xyz.com/wfc/logon',
+	'work_address' : '123 Generic Dr, Bellingham, WA 12345',
+	'work_title' : 'Work',
+	'work_description' : '',
+	'timezone' : 'America/Los_Angeles'
 }
