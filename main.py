@@ -18,8 +18,7 @@ password = cfg.kronos['password']
 days_out = 14
 
 chrome_options = webdriver.ChromeOptions()
-# chrome_options.add_argument("--headless")
-# chrome_options.add_argument("--window-size=1920x1080")
+chrome_options.add_argument("--disable-extensions")
 
 #For linux:
 #chrome_driver = os.path.dirname(os.path.realpath(__file__))+"\\Drivers\\linchromedriver"
