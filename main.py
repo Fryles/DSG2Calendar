@@ -42,7 +42,7 @@ def get_dates():
 	WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'column-scheduleShift-Row-0')))
 	driver.find_element_by_xpath('//*[@id="context"]/section/div/div/div[1]/div/div[1]/button').click()
 	driver.find_element_by_xpath('//*[@id="context"]/section/div/div/div[1]/div/div[1]/ul/li[14]').click()
-	WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'column-scheduleShift-Row-14')))
+	driver.implicitly_wait(10)
 	for i in range(days_out):
 		t = driver.find_element_by_xpath('//*[@id="column-scheduleShift-Row-'+str(i)+'"]/div').text
 		if t != '':
