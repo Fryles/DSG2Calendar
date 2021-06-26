@@ -5,9 +5,9 @@ kronos = {
 	'password' : 'IMakeMinimumWage'
 }
 user = {
-	'url' : 'https://workforcemobile.xyz.com/wfc/logon',
+	'url' : 'https://wfm.xyz.com/wfc/logon',
 	'work_address' : '123 Generic Dr, Bellingham, WA 12345',
 	'work_title' : 'Work',
 	'work_description' : '',
-	'timezone' : 'America/Los_Angeles'
+	'timezone' : 'America/Portland'
 }

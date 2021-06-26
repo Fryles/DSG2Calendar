@@ -19,6 +19,8 @@ days_out = 14
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument('--ignore-certificate-errors')
+chrome_options.add_argument('--ignore-ssl-errors')
 
 #For linux:
 #chrome_driver = os.path.dirname(os.path.realpath(__file__))+"\\Drivers\\linchromedriver"
@@ -31,18 +33,17 @@ def get_dates():
 	driver.find_element_by_id('username').send_keys(username)
 	driver.find_element_by_id('passInput').send_keys(password)
 	driver.find_element_by_id('loginSubmit').click()
-	
+	time.sleep(1)
+	driver.get(url+'/wfc/htmlnavigator/launch')#dumb workaround
 	#this is the xpath for the button to bring up the timecard
 	tcbtn = '/html/body/krn-app/krn-navigator-container/ui-view/krn-workspace-manager-container/krn-workspace/krn-related-items/div/ul/li[3]/div/div'
-	WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, tcbtn)))
 	driver.find_element_by_xpath(tcbtn).click()
 	#need to switch to widget iframe for getting schedule dates
 	driver.switch_to.frame('widgetFrame2299')
 	times = {}#dict with date as the keys and arr of times as the values
-	WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'column-scheduleShift-Row-0')))
 	driver.find_element_by_xpath('//*[@id="context"]/section/div/div/div[1]/div/div[1]/button').click()
 	driver.find_element_by_xpath('//*[@id="context"]/section/div/div/div[1]/div/div[1]/ul/li[14]').click()
-	driver.implicitly_wait(10)
+	time.sleep(1)
 	for i in range(days_out):
 		t = driver.find_element_by_xpath('//*[@id="column-scheduleShift-Row-'+str(i)+'"]/div').text
 		if t != '':
@@ -102,6 +103,7 @@ def add_to_cal(dates):
 
 if __name__ == "__main__":
 	driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
+	driver.implicitly_wait(10)
 	dates = get_dates()
 	add_to_cal(dates)
 	driver.close()
