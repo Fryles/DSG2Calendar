@@ -1,7 +1,8 @@
 # Kronos To Calendar
  Program to access Kronos workforce management website via selenium and add your work
  schedule to your Google Calendar using Google's API.
- -Currently obsolete, I don't plan on updating this as I no longer using Kronos.
+ 
+ Currently obsolete, I don't plan on updating this as I no longer using Kronos.
 ## How to use:
  - Add your Google Calendar credentials.json to the programs directory.
  - Create a config.py, replacing the values in the example config.py with your own.
