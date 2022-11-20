@@ -1,6 +1,6 @@
 # Kronos To Calendar
 
-Script written in Python to access Kronos workforce management website via selenium and web scrape it in order to add your work
+Web scraper in python that accesses Kronos' workforce management web-app via selenium and harvests your working hours in order to add your work
 schedule to Google Calendar using Google's API.
 
 While this was incredibly useful while I used Kronos WFM, it is currently obsolete, I don't plan on updating this as I no longer using Kronos.
